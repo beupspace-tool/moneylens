@@ -2,8 +2,9 @@
 
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { Download, Upload, Trash2 } from 'lucide-react'
+import { Download, Upload, Trash2, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { resetInsuranceToSeed } from '@/lib/store/insurance-migration'
 import {
   Dialog,
   DialogContent,
@@ -131,6 +132,25 @@ export function DataManagementSection() {
             className="border-[#1B2A4A] text-[#1B2A4A] hover:bg-[#EBF0F7] gap-2 shrink-0"
           >
             <Upload size={15} /> Nhập dữ liệu
+          </Button>
+        </div>
+
+        {/* Reset Insurance to sample */}
+        <div className="flex items-center justify-between rounded-lg border border-[#E2E8F0] px-4 py-3">
+          <div>
+            <p className="text-sm font-semibold text-[#1B2A4A]">Reset data bảo hiểm</p>
+            <p className="text-xs text-[#64748B]">Khôi phục dữ liệu bảo hiểm mẫu (ghi đè data BH hiện tại)</p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => {
+              resetInsuranceToSeed()
+              toast.success('Đã reset dữ liệu bảo hiểm')
+              window.location.reload()
+            }}
+            className="border-[#D4A843] text-[#D4A843] hover:bg-[#FDF4E0] gap-2 shrink-0"
+          >
+            <RefreshCw size={15} /> Reset BH
           </Button>
         </div>
 

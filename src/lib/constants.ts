@@ -193,12 +193,57 @@ export const INSURANCE_STATUSES = [
   { value: 'cancelled', label: 'Đã hủy' },
 ] as const
 
-// Insurance product names (from user's actual policies)
+// Insurance providers
+export const INSURANCE_PROVIDERS = [
+  'Manulife',
+  'Prudential',
+  'AIA',
+  'Dai-ichi Life',
+  'Bảo Việt',
+  'Generali',
+  'Sun Life',
+  'FWD',
+  'Chubb Life',
+  'Hanwha Life',
+  'Khác',
+] as const
+
+// Insurance product types
+export const INSURANCE_PRODUCT_TYPES = [
+  { value: 'traditional', label: 'Truyền thống (có chia lãi)' },
+  { value: 'universal_life', label: 'Liên kết chung' },
+  { value: 'unit_linked', label: 'Liên kết đơn vị' },
+  { value: 'term', label: 'Bảo hiểm có thời hạn' },
+  { value: 'whole_life', label: 'Trọn đời' },
+] as const
+
+// Relationship types for insured persons
+export const INSURANCE_RELATIONSHIPS = [
+  { value: 'self', label: 'Bản thân' },
+  { value: 'mother', label: 'Mẹ' },
+  { value: 'father', label: 'Ba' },
+  { value: 'spouse', label: 'Vợ/Chồng' },
+  { value: 'child', label: 'Con' },
+  { value: 'other', label: 'Khác' },
+] as const
+
+// Benefit types
+export const INSURANCE_BENEFIT_TYPES = [
+  { value: 'death', label: 'Tử vong' },
+  { value: 'accident', label: 'Tai nạn' },
+  { value: 'critical_illness', label: 'Bệnh hiểm nghèo' },
+  { value: 'hospital', label: 'Nằm viện' },
+  { value: 'disability', label: 'Thương tật' },
+  { value: 'maturity', label: 'Đáo hạn' },
+  { value: 'other', label: 'Khác' },
+] as const
+
+// Insurance product names
 export const INSURANCE_PRODUCTS = [
   'Hành trình hạnh phúc',
   'Gia đình tôi yêu',
   'Cuộc sống tươi đẹp',
-  'Cuộc sống tươi đẹp -4Trang',
+  'Cuộc sống tươi đẹp (4Trang)',
   'Món quà tương lai',
 ] as const
 

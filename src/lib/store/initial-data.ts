@@ -58,11 +58,112 @@ export const INITIAL_USD_DATA: UsdTransaction[] = [
 // Insurance (policies with nested payments)
 // ---------------------------------------------------------------------------
 export const INITIAL_INSURANCE_DATA: InsurancePolicy[] = [
-  { id: 'ins-1', product_name: 'Hành trình hạnh phúc', annual_premium: 21_056_000, start_date: '2020-01-01', payment_years: 6, total_paid: 126_336_000, coverage_amount: 750_000_000, status: 'active' },
-  { id: 'ins-2', product_name: 'Gia đình tôi yêu', annual_premium: 16_000_000, start_date: '2019-01-01', payment_years: 7, total_paid: 112_000_000, coverage_amount: 200_000_000, status: 'active' },
-  { id: 'ins-3', product_name: 'Cuộc sống tươi đẹp', annual_premium: 13_145_000, start_date: '2018-01-01', payment_years: 8, total_paid: 105_160_000, coverage_amount: 200_000_000, status: 'active' },
-  { id: 'ins-4', product_name: 'Cuộc sống tươi đẹp (4Trang)', annual_premium: 14_706_000, start_date: '2018-01-01', payment_years: 8, total_paid: 117_648_000, coverage_amount: 200_000_000, status: 'active' },
-  { id: 'ins-5', product_name: 'Món quà tương lai', annual_premium: 16_180_000, start_date: '2022-01-01', payment_years: 3, total_paid: 48_540_000, coverage_amount: 1_050_000_000, status: 'active' },
+  {
+    id: 'ins-1', product_name: 'Hành trình hạnh phúc', annual_premium: 21_056_000,
+    start_date: '2020-09-23', payment_years: 6, total_paid: 126_336_000,
+    coverage_amount: 750_000_000, status: 'active',
+    policy_number: '2910951457', provider: 'Manulife',
+    product_type: 'universal_life', maturity_date: '2090-09-23',
+    base_premium: 15_750_000, rider_premium: 5_306_000,
+    insured_persons: [
+      { name: 'Nguyễn Thị Tuyết Trang', relationship: 'self' },
+      { name: 'Nguyễn Thị Hằng', relationship: 'mother' },
+    ],
+    benefits: [
+      { type: 'death', description: 'Tử vong', amount: 750_000_000 },
+      { type: 'accident', description: 'Tử vong do tai nạn máy bay', amount: 2_250_000_000, note: '+300% STBH' },
+      { type: 'hospital', description: 'Trợ cấp nằm viện', amount: 1_500_000, note: '/ngày' },
+      { type: 'hospital', description: 'Nằm viện ICU', amount: 3_000_000, note: '/ngày' },
+      { type: 'maturity', description: 'Đáo hạn', note: 'Toàn bộ giá trị tài khoản' },
+    ],
+    riders: [
+      { name: 'Trợ cấp y tế nằm viện', insured: 'Nguyễn Thị Hằng', coverage: 200_000, premium: 1_236_000, note: '/ngày' },
+      { name: 'Điều trị nội trú Bạc', insured: 'Nguyễn Thị Hằng', premium: 4_070_000 },
+    ],
+  },
+  {
+    id: 'ins-2', product_name: 'Gia đình tôi yêu', annual_premium: 16_000_000,
+    start_date: '2019-06-18', payment_years: 7, total_paid: 112_000_000,
+    coverage_amount: 150_000_000, status: 'active',
+    policy_number: '2910814192', provider: 'Manulife',
+    product_type: 'universal_life', maturity_date: '2067-06-18',
+    base_premium: 15_125_000, rider_premium: 875_000,
+    insured_persons: [
+      { name: 'Nguyễn Tăng Mận', relationship: 'father' },
+    ],
+    benefits: [
+      { type: 'death', description: 'Tử vong', amount: 150_000_000 },
+      { type: 'accident', description: 'Tử vong tai nạn máy bay', amount: 450_000_000, note: '+300% STBH' },
+      { type: 'accident', description: 'Tử vong tai nạn GTCC', amount: 300_000_000, note: '+200% STBH' },
+      { type: 'maturity', description: 'Đáo hạn', note: 'Toàn bộ giá trị tài khoản' },
+    ],
+    riders: [
+      { name: 'Tử vong & thương tật do tai nạn', insured: 'Nguyễn Tăng Mận', coverage: 350_000_000, premium: 875_000 },
+    ],
+  },
+  {
+    id: 'ins-3', product_name: 'Cuộc sống tươi đẹp', annual_premium: 13_145_000,
+    start_date: '2018-09-30', payment_years: 8, total_paid: 105_160_000,
+    coverage_amount: 100_000_000, status: 'active',
+    policy_number: '2910789279', provider: 'Manulife',
+    product_type: 'traditional', maturity_date: '2068-09-30',
+    base_premium: 10_373_000, rider_premium: 2_772_000,
+    insured_persons: [
+      { name: 'Nguyễn Thị Hằng', relationship: 'mother' },
+    ],
+    benefits: [
+      { type: 'death', description: 'Tử vong', amount: 100_000_000 },
+      { type: 'critical_illness', description: 'Bệnh hiểm nghèo giai đoạn sớm', amount: 25_000_000, note: 'tối đa 4 lần' },
+      { type: 'critical_illness', description: 'Bệnh hiểm nghèo giai đoạn giữa', amount: 50_000_000, note: 'tối đa 2 lần' },
+      { type: 'critical_illness', description: 'Bệnh hiểm nghèo giai đoạn cuối', amount: 100_000_000 },
+      { type: 'other', description: 'Tiền mặt đặc biệt', amount: 100_000_000 },
+      { type: 'maturity', description: 'Hoàn lại khi đáo hạn', amount: 100_000_000, note: '100% STBH' },
+    ],
+    riders: [
+      { name: 'Thương tật toàn bộ & vĩnh viễn', insured: 'Nguyễn Thị Hằng', coverage: 150_000_000, premium: 581_000 },
+      { name: 'Trợ cấp y tế nằm viện', insured: 'Nguyễn Thị Hằng', coverage: 300_000, premium: 1_521_000 },
+      { name: 'Tử vong & thương tật do tai nạn', insured: 'Nguyễn Thị Hằng', coverage: 150_000_000, premium: 308_000 },
+      { name: 'Miễn nộp phí cho Bên Mua BH', insured: 'Nguyễn Thị Tuyết Trang', premium: 362_000 },
+    ],
+  },
+  {
+    id: 'ins-4', product_name: 'Cuộc sống tươi đẹp (4Trang)', annual_premium: 14_706_000,
+    start_date: '2018-09-30', payment_years: 8, total_paid: 117_648_000,
+    coverage_amount: 100_000_000, status: 'active',
+    policy_number: '2910789279', provider: 'Manulife',
+    product_type: 'traditional', maturity_date: '2068-09-30',
+    insured_persons: [
+      { name: 'Nguyễn Thị Tuyết Trang', relationship: 'self' },
+    ],
+    benefits: [
+      { type: 'death', description: 'Tử vong', amount: 100_000_000 },
+      { type: 'critical_illness', description: 'Bệnh hiểm nghèo (3 giai đoạn)', amount: 100_000_000 },
+      { type: 'other', description: 'Tiền mặt đặc biệt', amount: 100_000_000 },
+      { type: 'maturity', description: 'Hoàn lại khi đáo hạn', amount: 100_000_000 },
+    ],
+  },
+  {
+    id: 'ins-5', product_name: 'Món quà tương lai', annual_premium: 16_180_000,
+    start_date: '2022-12-19', payment_years: 3, total_paid: 48_540_000,
+    coverage_amount: 1_050_000_000, status: 'active',
+    policy_number: '2911101573', provider: 'Manulife',
+    product_type: 'unit_linked', maturity_date: '2090-12-19',
+    base_premium: 10_000_000, rider_premium: 6_180_000,
+    insured_persons: [
+      { name: 'Nguyễn Thị Tuyết Trang', relationship: 'self' },
+    ],
+    benefits: [
+      { type: 'death', description: 'Tử vong', amount: 1_050_000_000 },
+      { type: 'accident', description: 'Tử vong do tai nạn', amount: 2_100_000_000, note: '+100% STBH' },
+      { type: 'disability', description: 'Thương tật toàn bộ do tai nạn', amount: 1_050_000_000 },
+      { type: 'disability', description: 'Tổn thương nội tạng', amount: 350_000_000, note: 'tối đa 15% STBH' },
+      { type: 'maturity', description: 'Đáo hạn', note: 'Giá trị tài khoản quỹ' },
+    ],
+    riders: [
+      { name: 'Bệnh lý nghiêm trọng mở rộng', insured: 'Nguyễn Thị Tuyết Trang', coverage: 100_000_000, premium: 1_200_000, term_years: 54 },
+      { name: 'Điều trị nội trú Titan', insured: 'Nguyễn Thị Tuyết Trang', premium: 4_980_000, term_years: 20 },
+    ],
+  },
 ]
 
 // ---------------------------------------------------------------------------

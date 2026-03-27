@@ -59,6 +59,27 @@ export interface UsdTransaction {
   status?: string     // 'holding' | 'converted'
 }
 
+export interface InsuredPerson {
+  name: string
+  relationship: string  // 'self' | 'mother' | 'father' | 'spouse' | 'child' | 'other'
+}
+
+export interface InsuranceBenefit {
+  type: string          // 'death' | 'accident' | 'critical_illness' | 'hospital' | 'disability' | 'maturity' | 'other'
+  description: string
+  amount?: number
+  note?: string
+}
+
+export interface InsuranceRider {
+  name: string
+  insured: string       // person name
+  coverage?: number
+  premium: number
+  term_years?: number
+  note?: string
+}
+
 export interface InsurancePolicy {
   id: string
   product_name: string
@@ -67,7 +88,17 @@ export interface InsurancePolicy {
   payment_years: number
   total_paid: number
   coverage_amount?: number
-  status?: string     // 'active' | 'paid_up' | 'cancelled'
+  status?: string            // 'active' | 'paid_up' | 'cancelled'
+  // Extended fields (all optional for backward compat)
+  policy_number?: string
+  provider?: string          // 'Manulife' | 'Prudential' | 'AIA' | etc.
+  product_type?: string      // 'traditional' | 'universal_life' | 'unit_linked'
+  maturity_date?: string
+  insured_persons?: InsuredPerson[]
+  benefits?: InsuranceBenefit[]
+  riders?: InsuranceRider[]
+  base_premium?: number
+  rider_premium?: number
 }
 
 export interface InsurancePayment {
