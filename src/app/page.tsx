@@ -1,65 +1,174 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { PortfolioSummaryCards } from '@/components/dashboard/portfolio-summary-cards'
+import { AssetAllocationChart } from '@/components/dashboard/asset-allocation-chart'
+import { NetWorthChart } from '@/components/dashboard/net-worth-chart'
+import { AssetDetailCards } from '@/components/dashboard/asset-detail-cards'
+import { QuickInfoCards } from '@/components/dashboard/quick-info-cards'
+import {
+  useGoldStore,
+  useFundStore,
+  useSavingsStore,
+  useUsdStore,
+  useInsuranceStore,
+  useSubscriptionStore,
+  useCashStore,
+  useLoanStore,
+  useLoanPaymentStore,
+} from '@/lib/store/use-store'
+import { useSettings } from '@/lib/store/use-settings'
+
+function SectionHeader({ title }: { title: string }) {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="mb-3">
+      <h2 className="text-base font-bold text-[#1B2A4A] font-[family-name:var(--font-nunito)]">
+        {title}
+      </h2>
+      <div className="mt-1 h-0.5 w-10 rounded-full bg-[#008080]" />
     </div>
-  );
+  )
+}
+
+export default function DashboardPage() {
+  const { settings } = useSettings()
+  const { items: goldItems } = useGoldStore()
+  const { items: fundItems } = useFundStore()
+  const { items: savingsItems } = useSavingsStore()
+  const { items: usdItems } = useUsdStore()
+  const { items: insuranceItems } = useInsuranceStore()
+  const { items: subItems } = useSubscriptionStore()
+  const { items: cashItems } = useCashStore()
+  const { items: loans } = useLoanStore()
+  useLoanPaymentStore() // ensure loan payment store is initialized
+
+  // --- Asset calculations using settings prices ---
+  const goldTotal = goldItems.reduce(
+    (s, g) => s + g.qty_chi * (settings.gold_price_per_chi ?? 0),
+    0
+  )
+
+  // Fund value: sum(buy.qty - sell.qty) * NAV for each code, fallback to sum(amount_vnd)
+  const fundTotal = (() => {
+    const byCode: Record<string, { netQty: number; invested: number }> = {}
+    for (const f of fundItems) {
+      if (!byCode[f.fund_code]) byCode[f.fund_code] = { netQty: 0, invested: 0 }
+      const isBuy = (f.transaction_type ?? 'buy') === 'buy'
+      byCode[f.fund_code].netQty += isBuy ? (f.qty_units ?? 0) : -(f.qty_units ?? 0)
+      byCode[f.fund_code].invested += isBuy ? f.amount_vnd : -f.amount_vnd
+    }
+    let total = 0
+    for (const [code, { netQty, invested }] of Object.entries(byCode)) {
+      const nav = settings.fund_navs?.[code]
+      total += nav != null ? netQty * nav : invested
+    }
+    return total
+  })()
+
+  const savingsTotal = savingsItems
+    .filter((d) => d.status === 'active')
+    .reduce((s, d) => s + d.amount, 0)
+
+  const cashTotal = cashItems.reduce((s, c) => s + c.amount, 0)
+
+  // USD: only sum items where status !== 'converted'
+  const holdingUsdItems = usdItems.filter((u) => (u.status ?? 'holding') !== 'converted')
+  const usdVnd = holdingUsdItems.reduce(
+    (s, u) => s + u.amount_usd * (settings.usd_vnd_rate ?? 0),
+    0
+  )
+
+  const insuranceTotal = insuranceItems.reduce((s, p) => s + (p.total_paid ?? 0), 0)
+
+  const totalAssets = goldTotal + fundTotal + savingsTotal + cashTotal + usdVnd + insuranceTotal
+
+  // --- Debt calculation ---
+  const totalDebt = loans.reduce((s, l) => s + (l.remaining_balance ?? 0), 0)
+
+  // --- Net worth ---
+  const netWorth = totalAssets - totalDebt
+
+  // --- USD summary for sub-components ---
+  const totalUsdHolding = holdingUsdItems.reduce((s, u) => s + u.amount_usd, 0)
+
+  const allocationData = [
+    { name: 'Vàng', key: 'gold', value: goldTotal },
+    { name: 'CCQ', key: 'funds', value: fundTotal },
+    { name: 'Tiết kiệm', key: 'savings', value: savingsTotal },
+    { name: 'Tiền mặt', key: 'cash', value: cashTotal },
+    { name: 'USD', key: 'usd', value: usdVnd },
+    { name: 'Bảo hiểm', key: 'insurance', value: insuranceTotal },
+  ].filter((d) => d.value > 0)
+
+  // Count distinct asset channels with non-zero values
+  const channelCount = [
+    goldTotal > 0,
+    fundTotal > 0,
+    savingsTotal > 0,
+    usdVnd > 0,
+    insuranceTotal > 0,
+    cashTotal > 0,
+  ].filter(Boolean).length
+
+  return (
+    <div className="space-y-8">
+      {/* Page header */}
+      <div>
+        <h1 className="text-2xl font-extrabold text-[#1B2A4A] font-[family-name:var(--font-nunito)] tracking-tight">
+          Xin chào, Trang
+        </h1>
+        <p className="text-sm text-[#64748B] mt-0.5">Tổng quan tài chính cá nhân</p>
+      </div>
+
+      {/* Row 1: Summary cards */}
+      <section>
+        <SectionHeader title="Tổng quan danh mục" />
+        <PortfolioSummaryCards
+          totalAssets={totalAssets}
+          netWorth={netWorth}
+          totalDebt={totalDebt}
+          channels={channelCount}
+          usdRate={settings.usd_vnd_rate}
+        />
+      </section>
+
+      {/* Row 2: Charts */}
+      <section>
+        <SectionHeader title="Phân tích & Tăng trưởng" />
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <AssetAllocationChart data={allocationData} total={totalAssets} totalDebt={totalDebt} />
+          <NetWorthChart liveNetWorth={netWorth} />
+        </div>
+      </section>
+
+      {/* Row 3: Asset detail cards */}
+      <section>
+        <SectionHeader title="Chi tiết tài sản" />
+        <AssetDetailCards
+          goldItems={goldItems}
+          fundItems={fundItems}
+          savingsItems={savingsItems}
+          usdItems={usdItems}
+          insuranceItems={insuranceItems}
+          cashItems={cashItems}
+          goldPricePerChi={settings.gold_price_per_chi}
+          usdRate={settings.usd_vnd_rate}
+          fundNavs={settings.fund_navs ?? {}}
+        />
+      </section>
+
+      {/* Row 4: Quick info */}
+      <section>
+        <SectionHeader title="Thông tin nhanh" />
+        <QuickInfoCards
+          loans={loans}
+          subItems={subItems}
+          savingsItems={savingsItems}
+          insuranceItems={insuranceItems}
+          usdItems={usdItems}
+          totalUsdHolding={totalUsdHolding}
+          usdRate={settings.usd_vnd_rate}
+        />
+      </section>
+    </div>
+  )
 }
